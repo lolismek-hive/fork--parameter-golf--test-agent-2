@@ -588,9 +588,11 @@ class CausalSelfAttention(nn.Module):
         k = self.c_k(x).reshape(bsz, seqlen, self.num_kv_heads, self.head_dim).transpose(1, 2)
         v = self.c_v(x).reshape(bsz, seqlen, self.num_kv_heads, self.head_dim).transpose(1, 2)
         v_out = v
+        lam = self.value_residual_mix.to(dtype=v.dtype)
         if v0 is not None:
-            lam = self.value_residual_mix.to(dtype=v.dtype)
             v = lam[0] * v + lam[1] * v0
+        else:
+            v = lam[0] * v
         q = F.rms_norm(q, (q.size(-1),))
         k = F.rms_norm(k, (k.size(-1),))
         cos, sin = self.rotary(seqlen, x.device, q.dtype)
