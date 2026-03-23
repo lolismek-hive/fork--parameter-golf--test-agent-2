@@ -9,3 +9,5 @@ __pycache__/
 *.pt
 *.ptz
 logs/
+.claude/
+loss_log.json
